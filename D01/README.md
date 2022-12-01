@@ -1,3 +1,4 @@
+```
 --- Day 1: Calorie Counting ---
 Santa's reindeer typically eat regular reindeer food, but they need a lot of magical energy to deliver presents on Christmas. For that, their favorite snack is a special type of star fruit that only grows deep in the jungle. The Elves have brought you on their annual expedition to the grove where the fruit grows.
 
@@ -48,3 +49,4 @@ In the example above, the top three Elves are the fourth Elf (with 24000 Calorie
 Find the top three Elves carrying the most Calories. How many Calories are those Elves carrying in total?
 
 Your puzzle answer was 206780.
+```
