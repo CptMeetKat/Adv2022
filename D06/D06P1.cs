@@ -47,7 +47,6 @@ public class D06P1 : AocMachine
          else
             repeats.Add(tail, 1);
 
-
          if (! containsDupes() )
          {
             result = i + 1;
