@@ -1,8 +1,6 @@
 
 public class D08P1 : AocMachine 
 {
-   HashSet<string> visible = new HashSet<string>();
-
    public D08P1(string filename) : base(filename)
    {
    }   
@@ -11,17 +9,7 @@ public class D08P1 : AocMachine
    {
       readData(filename);
       findVisibleTrees();
-      // printVisibleTrees();
       displayResults();
-   }
-
-   private void printVisibleTrees()
-   {
-      foreach (var key in visible)
-      {
-         Console.WriteLine("{0}", key);
-         
-      }
    }
    
    private bool isVisibleDown(int x, int y)
