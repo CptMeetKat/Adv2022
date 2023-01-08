@@ -105,6 +105,7 @@ public class D11P1 : AocMachine
             m.inspect(monkeys);
       }
 
+      // printInspections();
       monkeys.Sort(delegate(Monkey x, Monkey y)
       {
          if (x.inspections < y.inspections) return -1;
@@ -112,7 +113,6 @@ public class D11P1 : AocMachine
          return 0;
       });
       monkeys.Reverse();
-      printInspections();
 
       result = monkeys[0].inspections * monkeys[1].inspections;
    }
@@ -125,12 +125,10 @@ public class D11P1 : AocMachine
 
    }
 
-
    public override void displayResults()
    {
       Console.WriteLine("results: {0}", result);
    }
-  
 }
 
 
@@ -157,7 +155,7 @@ public class Monkey
          inspections++;
          
          items[0] = operation(items[0]);
-         items[0] = items[0] / 3;;
+         items[0] = items[0] / 3;
 
          if(  test(items[0])   )
             monkeys[trueTarget].items.Add(items[0]);

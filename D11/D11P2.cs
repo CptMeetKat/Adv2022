@@ -1,9 +1,12 @@
 namespace Part2;
 
+using System.Numerics;
+
 public class D11P2 : AocMachine 
 {
 
    List<Monkey> monkeys = new List<Monkey>();
+   new BigInteger result;
 
    public D11P2(string filename) : base(filename)
    {
@@ -21,6 +24,7 @@ public class D11P2 : AocMachine
    private void populateMonkeys()
    {
       int i = 0;
+      int cap = 1;
       while(i < data.Count)
       {
          string[] atoms = data[i++].Split(" ");
@@ -29,12 +33,15 @@ public class D11P2 : AocMachine
             Monkey monkey = new Monkey();
             parseStartingItems(monkey, data[i++]);
             parseOperation(monkey, data[i++]);
-            parseTest(monkey, data[i++]);
+            cap = cap * parseTest(monkey, data[i++]);
             parseTrueTest(monkey, data[i++]);
             parseFalseTest(monkey, data[i++]);
             monkeys.Add(monkey);
          }
       }
+
+      foreach (var m in monkeys)
+         m.cap = cap;  
    }
 
    private void parseTrueTest(Monkey m, string line)
@@ -51,12 +58,14 @@ public class D11P2 : AocMachine
       m.falseTarget = value;
    }
 
-   private void parseTest(Monkey m, string line)
+   private int parseTest(Monkey m, string line)
    {
       string[] atoms = line.Split(" ");
-      int value = int.Parse(atoms[atoms.Count() -1]);
+      ulong value = ulong.Parse(atoms[atoms.Count() -1]);
 
       m.test = x => x % value == 0; //Divide 0 error      
+
+      return (int)value;
 
    }
 
@@ -77,7 +86,7 @@ public class D11P2 : AocMachine
       }
       else
       {
-         int modiferValue = int.Parse(modifer);
+         ulong modiferValue = ulong.Parse(modifer);
          if(operation == "*")
             m.operation = x => x * modiferValue;
          else //(operation == "+") //Default
@@ -92,7 +101,7 @@ public class D11P2 : AocMachine
       atoms = atoms[1].Split(",");
       foreach(string value in atoms)
       {
-         m.items.Add(  int.Parse( value ) );
+         m.items.Add(  ulong.Parse( value ) );
       }
    }
 
@@ -105,6 +114,7 @@ public class D11P2 : AocMachine
             m.inspect(monkeys);
       }
 
+      // printInspections();
       monkeys.Sort(delegate(Monkey x, Monkey y)
       {
          if (x.inspections < y.inspections) return -1;
@@ -112,9 +122,8 @@ public class D11P2 : AocMachine
          return 0;
       });
       monkeys.Reverse();
-      printInspections();
 
-      result = monkeys[0].inspections * monkeys[1].inspections;
+      result = BigInteger.Multiply(monkeys[0].inspections, monkeys[1].inspections);
    }
 
    private void printInspections()
@@ -122,24 +131,22 @@ public class D11P2 : AocMachine
       foreach (Monkey m in monkeys)
          Console.Write(m.inspections + " ");
       Console.WriteLine();
-
    }
-
 
    public override void displayResults()
    {
       Console.WriteLine("results: {0}", result);
    }
-  
 }
 
 
 
 public class Monkey
 {
-   public List<int> items = new List<int>();
-   public Func<int, int> operation = x => x;
-   public Func<int, bool> test = x => false;
+   public int cap = -1;
+   public List<ulong> items = new List<ulong>();
+   public Func<ulong, ulong> operation = x => x;
+   public Func<ulong, bool> test = x => false;
    public int trueTarget = 0;
    public int falseTarget = 0;
 
@@ -149,18 +156,36 @@ public class Monkey
    {
    }
 
+   private ulong operate(int value)
+   {
+      ulong result = operation(  (ulong) value);
+      result = result % (ulong)cap;
+
+      
+      return result;
+   }
+
    public void inspect(List<Monkey> monkeys)
    {
+      
       while(items.Count > 0)
       {
+         // Console.WriteLine(items[0]);
          inspections++;
-         items[0] = operation(items[0]);
+         
+         items[0] = operate( (int) items[0]);
+         // items[0] = items[0] / 3;
+
          if(  test(items[0])   )
             monkeys[trueTarget].items.Add(items[0]);
          else
             monkeys[falseTarget].items.Add(items[0]);
 
          items.RemoveAt(0);
+
       }
+
+
+
    }
 }
