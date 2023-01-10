@@ -1,41 +1,76 @@
 using System.Text.Json;
 
-public class D13P1 : AocMachine 
+public class D13P2 : AocMachine 
 {
 
-   public D13P1(string filename) : base(filename)
+   public D13P2(string filename) : base(filename)
    {
    }   
 
    public override void run()
    {
       readData(filename);
-      determineListsInCorrectOrder();
+      removeEmptyLines();
+      addDividerPackets();
+      sortDistressSignal();
+      findDecoderKey("[[2]]", "[[6]]");
       displayResults();
+   }
+
+
+   private void findDecoderKey(string a, string b)
+   {
+      int keyA = -1;
+      int keyB = -1;
+
+      for (int i = 0; i < data.Count; i++)
+      {
+         string s = data[i];
+         if(s == a)
+            keyA = i+1;
+         if(s == b)
+            keyB = i+1;
+      }
+      result = keyA * keyB;
+   }
+
+   private void addDividerPackets()
+   {
+      data.Add("[[2]]");
+      data.Add("[[6]]");
+   }
+
+
+   private void removeEmptyLines()
+   {
+      for (int i = 0; i < data.Count; i++)
+      {
+         if(data[i] == "")
+            data.RemoveAt(i);
+      }
    }
    
    
 
-   public void determineListsInCorrectOrder()
+   public void sortDistressSignal()
    {
-      int loop = 1;
-      for (int i = 0; i < data.Count; i+=3)
+      for (int i = 0; i < data.Count-1; i++)
       {
-         var list1 = JsonDocument.Parse(data[i]).RootElement;
-         var list2 = JsonDocument.Parse(data[i+1]).RootElement;
-         
-         int order = isListInOrder(list1, list2);
-         // Console.WriteLine("PAIR: {0}", loop);
-         if ( order == -1 )
+         for (int j = i + 1; j < data.Count; j++)
          {
-            result += loop;
+            var list1 = JsonDocument.Parse(data[i]).RootElement;
+            var list2 = JsonDocument.Parse(data[j]).RootElement;
+
+            int order = isListInOrder(list1, list2);
+               
+            if( order == 1)
+            {
+               string temp = data[i];
+               data[i] = data[j];
+               data[j] = temp;
+            }
          }
-         else if(order == 1){}
-         else
-            Console.WriteLine("??? List's were equivalent, this is weird");
-         
-         loop++;
-      }   
+      }
    }
 
 
@@ -75,7 +110,7 @@ public class D13P1 : AocMachine
       if(a.GetArrayLength() > 1)
          return 1;
 
-      Console.WriteLine("xx returning 0");
+      // Console.WriteLine("xx returning 0");
       return 0;
    }
 
@@ -96,7 +131,7 @@ public class D13P1 : AocMachine
       if(b.GetArrayLength() > 1)
          return -1;
 
-      Console.WriteLine("zz returning 0");
+      // Console.WriteLine("zz returning 0");
       return 0;
    }
 
