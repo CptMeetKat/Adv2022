@@ -21,7 +21,6 @@ public class Scanner
    {
       c.setCoordinate(position);
       c.x -= distanceToBeacon+1;
-      // Console.WriteLine("trace {0} {1}", c.x, c.y);
       foreach (Coordinate it in step(c, 1, -1, distanceToBeacon+1))
          yield return it;
       foreach (Coordinate it in step(c, 1, 1, distanceToBeacon+1))
@@ -41,13 +40,5 @@ public class Scanner
          yield return c;
       }
    }
-
-
-//    static IEnumerable<int> MakeId()
-// {
-//   int index = 0;
-//   while (true)
-//     yield return index++;
-// }
 
 }

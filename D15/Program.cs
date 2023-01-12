@@ -13,5 +13,3 @@ machines.Add(new D15P2("input"));
 
 foreach (var m in machines)
    m.run();  
-
-//1337958778 is too low
