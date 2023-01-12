@@ -13,17 +13,11 @@ public class D15P2 : AocMachine
       readData(filename);
       parseData();
       findFirstAvailablePosition(new Coordinate(0, 0), new Coordinate(4000000, 4000000));
-      
+
       // findFirstAvailablePosition(new Coordinate(0, 0), new Coordinate(20, 20));
       // findDistressBeacon(new Coordinate(0, 0), new Coordinate(20, 20));
 
       displayResults();
-   }
-
-   private void debugDistance()
-   {
-      foreach (var s in scanners)
-         Console.WriteLine(s.distanceToBeacon);
    }
 
    private void parseData()
@@ -49,26 +43,6 @@ public class D15P2 : AocMachine
       }
    }
    
-
-   private int findFirstInspection()
-   {
-      int firstPosition = int.MaxValue;
-      foreach (Scanner s in scanners)
-      {
-         firstPosition = Math.Min(firstPosition, s.position.x - s.distanceToBeacon);
-      }
-      return firstPosition;
-   }
-
-   private int findLastInspection()
-   {
-      int lastPosition = int.MinValue;
-      foreach (Scanner s in scanners)
-      {
-         lastPosition = Math.Max(lastPosition, s.position.x + s.distanceToBeacon);
-      }
-      return lastPosition;
-   }
 
    public void findFirstAvailablePosition(Coordinate first, Coordinate last)
    {
