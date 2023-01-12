@@ -47,4 +47,9 @@ public class Coordinate
       return Math.Abs(this.x - c.x)  +  Math.Abs(this.y - c.y);
    }
 
+   public bool inRange(Coordinate start, Coordinate last)
+   {
+      return x >= start.x && x <= last.x && y >= start.y && y <= last.y;
+   }
+
 }

@@ -17,4 +17,37 @@ public class Scanner
       return position.calcEuclideanDistance(beacon);
    }
 
+   public IEnumerable<Coordinate> trace(Coordinate c)
+   {
+      c.setCoordinate(position);
+      c.x -= distanceToBeacon+1;
+      // Console.WriteLine("trace {0} {1}", c.x, c.y);
+      foreach (Coordinate it in step(c, 1, -1, distanceToBeacon+1))
+         yield return it;
+      foreach (Coordinate it in step(c, 1, 1, distanceToBeacon+1))
+         yield return it;
+      foreach (Coordinate it in step(c, -1, 1, distanceToBeacon+1))
+         yield return it;
+      foreach (Coordinate it in step(c, -1, -1, distanceToBeacon+1))
+         yield return it;
+   }
+
+   private IEnumerable<Coordinate> step(Coordinate c, int xMod, int yMod, int steps)
+   {
+      for (int i = 0; i < steps; i++)
+      {
+         c.x += xMod;
+         c.y += yMod;
+         yield return c;
+      }
+   }
+
+
+//    static IEnumerable<int> MakeId()
+// {
+//   int index = 0;
+//   while (true)
+//     yield return index++;
+// }
+
 }
