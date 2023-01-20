@@ -1,6 +1,4 @@
 
-
-
 public class Candidate : IComparable
 {
    public HashSet<int> visited = new HashSet<int>();
@@ -28,6 +26,8 @@ public class Candidate : IComparable
       }
    }
 
+   public Candidate(){}
+
    public void copyPath(List<string> prev)
    {
       foreach (var p in prev)
@@ -44,24 +44,26 @@ public class Candidate : IComparable
       Console.WriteLine();
    }
 
-
-
     public int CompareTo(Object? obj)
     {
-        // If other is not a valid object reference, this instance is greater.
         if (obj == null) return 1;
 
          Candidate candidate = (Candidate) obj;
 
         if(upperbound < candidate.upperbound) return -1;
         else if (upperbound > candidate.upperbound) return 1;
-
-        // The temperature comparison depends on the comparison of
-        // the underlying Double values.
         return 0;
     }
 
 
+    public HashSet<int> copyVisited()
+    {
+      HashSet<int> copy = new HashSet<int>();
+      foreach (var v in visited)
+      {
+         copy.Add(v);
+      }
+      return copy;
+    }
 
-   
 }
