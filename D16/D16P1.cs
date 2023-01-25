@@ -1,3 +1,5 @@
+using Part1;
+
 public class D16P1 : AocMachine 
 {
    public D16P1(string filename) : base(filename) { }   
@@ -116,23 +118,40 @@ public class D16P1 : AocMachine
 
       while (candidates.Count > 0)
       {
+         // Candidate c = pop(candidates);
+         // if(c.minute == maxMinutes) //Node has reached its lifetime
+         // {
+         //    if(c.score + c.carry >= best)
+         //       bestCandidate = c;
+         //    best = Math.Max(best, c.score+c.carry);
+         //    // pruneCandidates(candidates, best);
+         // }
+         // else
+         // {
+         //    exploreNeighbours(candidates, c, best);
+         //    if(! c.visited.Contains(c.id)) // Activate self
+         //       exploreSelf(candidates, c, best);
+         // }
+
          Candidate c = pop(candidates);
-         if(c.minute == maxMinutes) //Node has reached its lifetime
-         {
-            if(c.score + c.carry >= best)
-               bestCandidate = c;
-            best = Math.Max(best, c.score+c.carry);
-            // pruneCandidates(candidates, best);
-         }
-         else
+         if(c.score >= best)
+            bestCandidate = c;
+         best = Math.Max(best, c.score);
+         // pruneCandidates(candidates, best);
+         if(c.minute < maxMinutes)
          {
             exploreNeighbours(candidates, c, best);
             if(! c.visited.Contains(c.id)) // Activate self
                exploreSelf(candidates, c, best);
          }
+
+
+
+
       }
 
-      bestCandidate.score = bestCandidate.score - bestCandidate.carry;
+      if(bestCandidate.minute < maxMinutes)
+         bestCandidate.score = bestCandidate.score + bestCandidate.carry;
 
       bestCandidate.printPath();
       result = best;
@@ -141,10 +160,10 @@ public class D16P1 : AocMachine
 
    private void exploreNeighbours(List<Candidate> candidates, Candidate c, int best)
    {
+      int upperbound = calcUpperbound(c.minute+1, c.score + c.carry, c.visited);
       foreach (string adjacent in valves[c.id].tunnels)
       {
          int id = map[adjacent];
-         int upperbound = calcUpperbound(c.minute+1, c.score + c.carry, c.visited);
 
          if(upperbound >= best) //Ignore if better already exists
          {

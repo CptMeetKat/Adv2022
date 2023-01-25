@@ -4,7 +4,12 @@ List<AocMachine> machines = new List<AocMachine>();
 
 
 // machines.Add(new D16P1("input"));  
-machines.Add(new D16P1("input2"));
+// machines.Add(new D16P1("input2"));
+
+
+
+machines.Add(new D16P2("input"));
+// machines.Add(new D16P2("input2"));
 
 
 foreach (var m in machines)
@@ -38,3 +43,6 @@ foreach (var m in machines)
 
 
 // (5 * 29 )+(18 * 26 )+(23 * 23 )+(19 * 20 )+(12 * 17 )+(13 * 14 )+(14 * 11 )+(7  * 8 )+(9  * 5 )+(4 * 2)
+
+
+//2109 is too low
