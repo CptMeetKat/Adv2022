@@ -12,10 +12,6 @@ public class D16P2 : AocMachine
    int totalExplorers = 2;
    string targetId = "AA";
 
-
-   //STratagies, increment max minutes slowly and use that as the upperbound (induction) //THIS wont work thats too long
-   //DP induction
-
    public override void run()
    {
       readData(filename);
@@ -38,14 +34,6 @@ public class D16P2 : AocMachine
             break;
          }
       }
-   }
-
-   private void test()
-   {
-      int[] scores = new int[]{10};
-
-      int remain = calcRemainingScore(scores, 29);
-      Console.WriteLine("out {0}", remain);
    }
 
    private List<int> getOrderedScores(HashSet<int>? visited = null)
@@ -79,7 +67,6 @@ public class D16P2 : AocMachine
    {
       int upperbound = 0;
       int next = 0;
-      // for (int i = maxMinutes - minutesElapsed; i > 1; i-=1)
       for (int i = maxMinutes - minutesElapsed; i > 1; i-=2)
       {
          for (int j = 0; j < 2; j++)
@@ -127,39 +114,46 @@ public class D16P2 : AocMachine
    {
       Candidate? bestCandidate = new Candidate();
 
-      // int best = 0; ////Useing day 1 to determine starting best
-      int best = 2109; ////Useing day 1 to determine starting best
+      int best = 0; ////Useing day 1 to determine best value to start with
+                     //Can change to start at new position
       int upperbound = calcUpperbound(0, 0);
       int[] initialPositions = getInitalPositions();
       
       Console.WriteLine("upper {0}:" , upperbound);
 
       List<Candidate> candidates = new List<Candidate>();
+
       candidates.Add(new Candidate(  initialPositions, 0, 1, upperbound) );
       
-      candidates[0].path1.Add( valves[initialPositions[0]].id );
-      candidates[0].path2.Add( valves[initialPositions[1]].id );
+      // candidates[0].path1.Add( valves[initialPositions[0]].id );
+      // candidates[0].path2.Add( valves[initialPositions[1]].id );
+      int tryDiffApproach = 0;
 
       while (candidates.Count > 0)
       {
+         if(tryDiffApproach % 1000000 == 0)
+         {
+            tryDiffApproach = 0;
+            pruneCandidates(candidates, best);
+            candidates.Sort(); //Sort affects depth first traversal
+            Console.WriteLine("SORT: {0} {1}",candidates[0].upperbound, candidates[candidates.Count - 1].upperbound);
+         }
+         tryDiffApproach++;
+
          Candidate c = pop(candidates);
 
-         // if(c.score + c.carry > best)
          if(c.score > best)
             bestCandidate = c;
          best = Math.Max(best, c.score);
-         // best = Math.Max(best, c.score+c.carry);
 
          if(c.minute < maxMinutes && c.upperbound > best)
             explore(candidates, c, best);
       }
 
-
       if(bestCandidate.minute < maxMinutes)
          bestCandidate.score = bestCandidate.score + bestCandidate.carry;
 
       Console.WriteLine("Carry: {0}", bestCandidate.carry);
-
 
       bestCandidate.printPath(0);
       bestCandidate.printPath(1);
@@ -171,20 +165,10 @@ public class D16P2 : AocMachine
 
    private void explore(List<Candidate> candidates, Candidate c, int best)
    {
-      
-      // int[] optionsA = generateOptions(c.ids[0], c.visited);
-      // int[] optionsB = generateOptions(c.ids[1], c.visited);
-
-      if(c.upperbound < best)
-         return;
-
-
       Console.WriteLine("cand: {0} {1} {2} {3} {4}", c.minute, c.upperbound, c.score, candidates.Count, best);
-      // foreach (int o1 in optionsA)
-      foreach(int o1 in IterateTunnels(c.ids[0], c.visited))
+      foreach(int o1 in IterateTunnels(c.ids[0]))
       {
-         // foreach (int o2 in optionsB)
-         foreach(int o2 in IterateTunnels(c.ids[1], c.visited))
+         foreach(int o2 in IterateTunnels(c.ids[1]))
          {
             bool visited = false;
             Candidate temp = new Candidate();
@@ -202,13 +186,13 @@ public class D16P2 : AocMachine
                if(id < 0)
                {
                   id = transfordID(id);
-                  if(!nextVisited.Contains(id))
+                  if(!nextVisited.Contains(id) || valves[id].flowrate == 0)
                   {
-                     nextVisited.Add(id);
-                     temp.carry += ((maxMinutes - c.minute) * valves[id].flowrate);
-                     temp.ids[i] = id;
+                        nextVisited.Add(id);
+                        temp.carry += ((maxMinutes - c.minute) * valves[id].flowrate);
+                        temp.ids[i] = id;
 
-                     // addToPath(temp, i, valves[id].id+"+");
+                        // addToPath(temp, i, valves[id].id+"+");   
                   }
                   else
                      visited = true;
@@ -243,7 +227,7 @@ public class D16P2 : AocMachine
          c.path2.Add(id);
    }
 
-   private int[] generateOptions(int id, HashSet<int> visited)
+   private int[] generateOptions(int id)
    {  
       List<string> tunnels = valves[id].tunnels;
 
@@ -259,11 +243,10 @@ public class D16P2 : AocMachine
    }
 
 
-   private IEnumerable<int> IterateTunnels(int id, HashSet<int> visited)
+   private IEnumerable<int> IterateTunnels(int id)
    {
       foreach (string item in valves[id].tunnels)
       {
-         // yield map[item];
          yield return map[item];
       }
 
@@ -271,46 +254,6 @@ public class D16P2 : AocMachine
 
    }
 
-   private void exploreNeighbours(List<Candidate> candidates, Candidate c, int best)
-   {
-      int upperbound = calcUpperbound(c.minute+1, c.score + c.carry, c.visited);
-      int[] ids = new int[c.ids.Count];
-
-      c.ids.CopyTo(ids);
-
-      foreach (string adjacent0 in valves[c.ids[0]].tunnels)
-      {
-         ids[0] = map[adjacent0];
-         foreach (string adjacent1 in valves[c.ids[1]].tunnels)
-         { 
-            ids[1] = map[adjacent1];
-
-            if(upperbound >= best) //Ignore if better already exists
-            {
-               Candidate temp = new Candidate( ids, c.score+c.carry, c.minute+1, upperbound, c.visited);
-               candidates.Add( temp  );
-            }
-         }
-      }
-   }
-
-   private void exploreSelf(List<Candidate> candidates, Candidate c, int best, int id)
-   {
-      HashSet<int> nextVisited = c.copyVisited();
-      nextVisited.Add(id);
-      int carry = ((maxMinutes - c.minute) * valves[id].flowrate);
-      // carry = Math.Max(0, carry); //minute cant be 0 or else need this
-
-      int upperbound = calcUpperbound(c.minute+1, c.score + carry, nextVisited);
-      if(upperbound >= best)
-      {
-         Candidate temp = new Candidate( c.ids.ToArray(), c.score + c.carry, c.minute+1, upperbound, nextVisited, carry);
-         
-         // temp.copyPath(c.path);
-         // temp.path.Add(   valves[id].id+"+"  );
-         candidates.Add(  temp  );
-      }
-   }
 
    private void printValves()
    {

@@ -71,6 +71,7 @@ public class Candidate : IComparable
     }
 
 
+
     public HashSet<int> copyVisited()
     {
       HashSet<int> copy = new HashSet<int>();
